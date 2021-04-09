@@ -37,6 +37,9 @@ def convert_array_data_to_real_values(nama_data, array_data):
         for i in range(6):
             if (i==3):
                 arr_cpy[i] = int(arr_cpy[i])
+            elif (i==5):
+                arr_cpy[i] = int(arr_cpy[i])
+
     elif nama_data == "consumable.csv":
         for i in range(5):
             if (i==3):
@@ -156,6 +159,7 @@ def save():
     datas_as_string_gadget = convert_datas_to_string(header_data_gadget_global, data_gadget_global)
     datas_as_string_gadget_borrow_history = convert_datas_to_string(header_data_gadget_borrow_history_global, data_gadget_borrow_history_global)
     datas_as_string_gadget_return_history = convert_datas_to_string(header_data_gadget_return_history_global, data_gadget_return_history_global)
+
     f = open("user.csv", "w")
     f.write(datas_as_string_user)
     f.close()
@@ -211,6 +215,10 @@ def exit():
         save()
 
 
+
+
+
+
 def main():
     clrs()
     print("Loading...")
@@ -252,6 +260,12 @@ def main():
             elif mode == "pengguna":
                 masukan_pengguna = input('>>')
                 print ("masuk pak Rusli")
+                while masukan_pengguna != "exit":
+
+                    # if masukan_pengguna == 'pinjam':
+                        
+                    masukan_pengguna = input('>>')
+
 
         elif masukan == 'exit':
             exit()
