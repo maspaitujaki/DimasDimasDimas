@@ -140,7 +140,10 @@ def loading():
     header_data_gadget_return_history_global, data_gadget_return_history_global = buka_data("gadget_return_history.csv")
     
 def save():
-    lokasi_save = os.path.join(lokasi_program, input('Masukkan nama folder penyimpanan: '))
+    nama_folder = input('Masukkan nama folder penyimpanan: ')
+    lokasi_save = os.path.join(lokasi_program, nama_folder )
+
+    print("Saving...")
 
     try: os.makedirs(lokasi_save)
     except: pass
@@ -177,6 +180,9 @@ def save():
     f.write(datas_as_string_gadget_return_history)
     f.close()
 
+    
+    print("Data telah disimpan pada folder {}!".format(nama_folder))
+
 def register():
     
     new_user_id = data_pengguna_global[-1][0] + 1
@@ -195,7 +201,14 @@ def register():
     data_pengguna_global.append(new_user)
     print("User {} telah berhasil register ke dalam Kantong Ajaib.".format(new_user_username))
     
-
+def exit():
+    confirm = input('Apakah Anda mau menyimpan file yang sudah diubah? (Y/N)')
+    while not confirm in ['Y', 'y', 'N', 'n']:
+        print("Masukkan tidak valid!")
+        confirm = input('Apakah Anda mau menyimpan file yang sudah diubah? (Y/N)')
+          
+    if confirm.lower() == 'y':
+        save()
 
 
 def main():
@@ -225,11 +238,8 @@ def main():
             if mode == "admin":
                 masukan_admin = input('>>')
                 while masukan_admin != "exit":
-                    if masukan_admin == 'exit':
-                        masukan_admin = 'exit'
-                           
-                        continue
-                    elif masukan_admin == 'register':
+
+                    if masukan_admin == 'register':
                         register()
                     elif masukan_admin == 'help':
                         print("here is some help")
@@ -244,16 +254,9 @@ def main():
                 print ("masuk pak Rusli")
 
         elif masukan == 'exit':
-            confirm = input('Apakah Anda mau menyimpan file yang sudah diubah? (Y/N)')
+            exit()
             
-            while not confirm in ['Y', 'y', 'N', 'n']:
-                print("Masukkan tidak valid!")
-                confirm = input('Apakah Anda mau menyimpan file yang sudah diubah? (Y/N)')
             
-            if confirm.lower() == 'y':
-                save()
-            
-            else: pass
         
         else: print('Fungsi tidak valid! Masukkan help untuk pentunjuk.')
             
