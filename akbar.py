@@ -323,6 +323,7 @@ def main():
         masukan = input('>>')
 
         if masukan == 'login':
+            global active_person
             active_person, mode = login() # admin atau pengguna active_person, 
             
             if mode == "admin":
