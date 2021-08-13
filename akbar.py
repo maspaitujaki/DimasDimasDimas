@@ -4,6 +4,7 @@ import time
 
 
 # FUNGSI FUNGSI TAMBAHAN
+
 def clrs():
     os.system('cls')
 
@@ -194,10 +195,7 @@ def register():
     
     data_pengguna_global.append(new_user)
     print("User {} telah berhasil register ke dalam Kantong Ajaib.".format(new_user_username))
-    
-
-
-
+   
 def main():
     clrs()
     print("Loading...")

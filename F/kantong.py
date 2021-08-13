@@ -57,14 +57,29 @@ def convert_array_data_to_real_values(nama_data, array_data):
         for i in range(5):
             if (i==3):
                 arr_cpy[i] = int(arr_cpy[i])
-    # elif nama_data == "consumable_history.csv":
-    #     for i in range(4):
-    elif nama_data == "gadget_borrow_history":
-        for i in range(5):
+    elif nama_data == "consumable_history.csv":
+        for i in range(4):
+            if (i == 0):
+                arr_cpy[i] = int(arr_cpy[i])
+            elif (i==1):
+                arr_cpy[i] = int(arr_cpy[i])
+            elif (i==4):
+                arr_cpy[i] = int(arr_cpy[i])
+    elif nama_data == "gadget_borrow_history.csv":
+        for i in range(6):
+            if (i==0):
+                arr_cpy[i] = int(arr_cpy[i])
+            if (i==1):
+                arr_cpy[i] = int(arr_cpy[i])
             if (i==4):
                 arr_cpy[i] = int(arr_cpy[i])
-    # elif nama_data == "gadget_return_history":
-    #     for i in range(4):
+    elif nama_data == "gadget_return_history.csv":
+        for i in range(3):
+            if (i==0):
+                arr_cpy[i] = int(arr_cpy[i])
+            if (i==1):
+                arr_cpy[i] = int(arr_cpy[i])
+
     
     
     return arr_cpy
@@ -145,6 +160,13 @@ def ayo_ambil_sebagian(array_data, pencari, kolom_pencari, kolom_dicari):
             return line[kolom_dicari]
     return 
 
+def ayo_hapus_sebaris(array_data, pencari, kolom_pencari):
+	"""
+		Fungsi digunakan untuk menghapus 1 baris data array_data
+	"""
+	for line in array_data:
+		if line[kolom_pencari] == pencari:
+			array_data.remove(line)
 
 def id_to_name_gadget(iD):
     '''
@@ -156,13 +178,44 @@ def id_to_name_consum(iD):
     return ayo_ambil_sebagian(data_consumable_global,iD,0,1)
 
 def id_to_name_user(iD):
-    return ayo_ambil_sebagian(data_pengguna_global,int(iD),0,2)
+    return ayo_ambil_sebagian(data_pengguna_global,iD,0,2)
     
 def idPinjam_to_nama_gadget_id(iD):
     nama_peminjam = ayo_ambil_sebagian(data_gadget_borrow_history_global, iD, 0, 1)
     nama_gadget = ayo_ambil_sebagian(data_gadget_borrow_history_global, iD, 0, 2)
 
     return nama_peminjam, nama_gadget
+
+def modify_datas(array_data, pencari, kolom_pencari, kolom_dicari, value):
+	"""
+		Fungsi untuk mengubah nilai kolom tertentu pada array_data
+	"""
+	for line in array_data:
+		if line[kolom_pencari] == pencari:
+			line[kolom_dicari] = value
+	return
+
+def modify_nilai(pencari,kolom_pencari,kolom_dicari,value,array_data):
+    for lines in array_data:
+        if (lines[kolom_pencari] == pencari):
+            lines[kolom_dicari] = value
+    return
+
+def cek_user_masih_meminjam(id_peminjam,id_gadget):
+    # Mengecek apakah user sedang meminjam gadget 
+    # True jika iya
+    for baris in data_gadget_borrow_history_global :
+        if baris[1] == id_peminjam and baris[2] == id_gadget and baris[5] == 'false' :
+            return True
+    return False
+    
+def validasi_tanggal(tanggal):
+    import datetime
+    try:
+        datetime.datetime.strptime(tanggal, '%d/%m/%Y')
+        return True
+    except:
+        return False
 
 # FUNGSI FUNGSI KETENTUAN
 
@@ -226,55 +279,359 @@ def login():
         print("username tidak terdaftar atau password salah!")
         print("masukkan keluar pada username untuk batal")
     return
-       
-def tambahitem():
-    TabId = []
-    bisa_tambahitem = True
+
+def searchByRarity():
     TabRarity = ["C", "B", "A", "S"]
-    id_item = input("Masukkan ID: "+ "\n")
-    TabId.append(id_item)
-    if (id_item[0] == 'G'):
-        if cek(TabId[0], data_gadget_global, 0):
-            TabId = []
-            print("\n Gagal menambahkan item karena ID sudah ada")
-        else:
-            new_gadget_id = TabId[0]
+    l = len(data_gadget_global)
+
+    rarityPencarian = (input('Masukan rarity: '))
+    if rarityPencarian in TabRarity:
+        print('Hasil pencarian: ')
+        found = 0
+        n = 0
+        
+        while (n<l):
+            if (data_gadget_global[n][4] == rarityPencarian):
+                found += 1
+                print()
+                print('Nama: ', data_gadget_global[n][1])
+                print('Deskripsi: ', data_gadget_global[n][2])
+                print('Jumlah: ', data_gadget_global[n][3])
+                print('Rarity: ', data_gadget_global[n][4])
+                print('Tahun Ditemukan: ', data_gadget_global[n][5])
+                n += 1
+            else:
+                n += 1
+
+    if found == 0:
+        print('Tidak ada barang dengan rarity ', rarityPencarian)
+
+def searchByYear():
+    tahun = int(input("Masukan tahun: "))
+    kategori = input("Masukan kategori: ")
+    found = 0
+    l = len(data_gadget_global)
+    n = 0
+
+    while (n<l):
+        if (kategori=='='):
+            if (data_gadget_global[n][5]==tahun):
+                found += 1
+                print()
+                print('Nama: ', data_gadget_global[n][1])
+                print('Deskripsi: ', data_gadget_global[n][2])
+                print('Jumlah: ', data_gadget_global[n][3])
+                print('Rarity: ', data_gadget_global[n][4])
+                print('Tahun Ditemukan: ', data_gadget_global[n][5])
+                n = n+1
+            else:
+                n = n+1
+        elif (kategori=='>'):
+            if (data_gadget_global[n][5]>tahun):
+                found += 1
+                print()
+                print('Nama: ', data_gadget_global[n][1])
+                print('Deskripsi: ', data_gadget_global[n][2])
+                print('Jumlah: ', data_gadget_global[n][3])
+                print('Rarity: ', data_gadget_global[n][4])
+                print('Tahun Ditemukan: ', data_gadget_global[n][5])
+                n = n+1
+            else:
+                n = n+1
+        elif (kategori=='<'):
+            if (data_gadget_global[n][5]<tahun):
+                found += 1
+                print()
+                print('Nama: ', data_gadget_global[n][1])
+                print('Deskripsi: ', data_gadget_global[n][2])
+                print('Jumlah: ', data_gadget_global[n][3])
+                print('Rarity: ', data_gadget_global[n][4])
+                print('Tahun Ditemukan: ', data_gadget_global[n][5])
+                n = n+1
+            else:
+                n = n+1
+        elif (kategori=='>='):
+            if (data_gadget_global[n][5]>=tahun):
+                found += 1
+                print()
+                print('Nama: ', data_gadget_global[n][1])
+                print('Deskripsi: ', data_gadget_global[n][2])
+                print('Jumlah: ', data_gadget_global[n][3])
+                print('Rarity: ', data_gadget_global[n][4])
+                print('Tahun Ditemukan: ', data_gadget_global[n][5])
+                n = n+1
+            else:
+                n = n+1
+        elif (kategori=='<='):
+            if (data_gadget_global[n][5]<=tahun):
+                found += 1
+                print()
+                print('Nama: ', data_gadget_global[n][1])
+                print('Deskripsi: ', data_gadget_global[n][2])
+                print('Jumlah: ', data_gadget_global[n][3])
+                print('Rarity: ', data_gadget_global[n][4])
+                print('Tahun Ditemukan: ', data_gadget_global[n][5])
+                n = n+1
+            else:
+                n = n+1
+    if found == 0:
+        print('Tidak ada gadget yang ditemukan')
+   
+def tambahitem(): #fungsi untuk menambahkan item baru (ADMIN)
+    bisa_tambahitem = True
+    TabRarity = ["C", "B", "A", "S"] #Rarity bernilai True hanya jika berupa character C/ B/ A/ S
+    id_item = input("Masukkan ID: "+ "\n") #input nama ID
+    if (id_item[0] == 'G') and (len(id_item)!= 1): #id diproses pada list gadget jika berawalan huruf G dan berakhiran kode nomor tertentu
+        if cek(id_item, data_gadget_global, 0): #mengonfirmasi ID jika sudah terdaftar tidak akan diproses lagi
+            print("\nGagal menambahkan item karena ID sudah ada")
+        else:#menginput data item gadget baru secara keseluruhan
+            new_gadget_id = id_item
             new_gadget_name = input("Masukkan Nama: "+ "\n")
             new_gadget_deskripsi = input("Masukkan Deskripsi: "+ "\n")
-            new_gadget_jumlah = input("Masukkan Jumlah: "+ "\n")
+            new_gadget_jumlah = int(input("Masukkan Jumlah: "+ "\n"))
             new_gadget_rarity = input("Masukkan Rarity: "+ "\n")
             new_gadget_tahun = input("Masukkan tahun ditemukan: "+ "\n")
-            if new_gadget_rarity not in TabRarity:
-                TabId = []
+            if (new_gadget_jumlah <=0): #jumlah item valid hanya jika positif
                 bisa_tambahitem = False
-                print("\n Input rarity tidak valid!\n")
-            elif bisa_tambahitem:
-                TabId = []
+                print("\nInput jumlah tidak valid!\n")
+            if new_gadget_rarity not in TabRarity: #rarity valid jika berupa character pada TabRarity
+                bisa_tambahitem = False
+                print("\nInput rarity tidak valid!\n")
+            if bisa_tambahitem: #memasukkan data gadget baru kedalam list data_gadget_global
                 new_gadget = [new_gadget_id, new_gadget_name, new_gadget_deskripsi, new_gadget_jumlah, new_gadget_rarity, new_gadget_tahun]
                 data_gadget_global.append(new_gadget)
-                print("\n Item telah berhasil ditambahkan ke databese \n")
-    elif (id_item[0] == 'C'):
-        if cek(TabId[0], data_consumable_global, 0):
-            TabId = []
+                print("\nItem telah berhasil ditambahkan ke database \n")
+    elif (id_item[0] == 'C') and (len(id_item) != 1): #jika nama item berawalan huruf C maka diproses sebagai consumable
+        if cek(id_item, data_consumable_global, 0): #mengonfirmasi ID jika sudah terdaftar tidak akan diproses lagi
             print("\n Gagal menambahkan item karena ID sudah ada")
-        else:
-            new_consumable_id = TabId[0]
+        else:#menginput data item consumable baru secara keseluruhan
+            new_consumable_id = id_item
             new_consumable_name = input("Masukkan Nama: "+ "\n")
             new_consumable_deskripsi = input("Masukkan Deskripsi: "+ "\n")
-            new_consumable_jumlah = input("Masukkan Jumlah: "+ "\n")
+            new_consumable_jumlah = int(input("Masukkan Jumlah: "+ "\n"))
             new_consumable_rarity = input("Masukkan Rarity: "+ "\n")
-            if new_consumable_rarity not in TabRarity:
-                TabId = []
+            if (new_consumable_jumlah <=0): #jumlah item valid hanya jika bernilai positif
                 bisa_tambahitem = False
-                print("\n Input rarity tidak valid!\n")
-            elif bisa_tambahitem:
-                TabId = []
+                print("\nInput jumlah tidak valid!\n")
+            if new_consumable_rarity not in TabRarity:
+                bisa_tambahitem = False #rarity valid hanya jika berupa character pada TabRarity
+                print("\nInput rarity tidak valid!\n")
+            elif bisa_tambahitem: #memasukan data item consumable baru kedalam list data_consumable_global
                 new_consumable = [new_consumable_id, new_consumable_name, new_consumable_deskripsi, new_consumable_jumlah, new_consumable_rarity]
                 data_consumable_global.append(new_consumable)
-                print("\n Item telah berhasil ditambahkan ke databese \n")
+                print("\nItem telah berhasil ditambahkan ke database \n")
     else:
-        TabId = []
-        print("Gagal menambahkan item karena ID tidak valid")
+        print("Gagal menambahkan item karena ID tidak valid") #mengembalikan pesan error jika item baru bukan gadget atau consumable
+
+def hapusitem():
+	id_item = input('Masukkan ID Item : ') #input ID item
+	if (id_item[0] == "G"): #jika id berawalan huruf G akan diproses sebagai gadget
+		if cek(id_item, data_gadget_global, 0): #mengonfirmasi id gadget ada pada list
+			deskripsi_item = ayo_ambil_sebagian(data_gadget_global,id_item, 0, 1) #mengambil data string berupa deskripsi gadget dari ID tersebut
+			print('Apakah anda yakin ingin menghapus {}'.format(deskripsi_item))
+			selector = input("(Y/N)?")
+			if (selector == "Y"): #proses penghapusan item dijalankan jika memilih selector Y
+				ayo_hapus_sebaris(data_gadget_global, id_item, 0) #menghapus item pada list gadget
+				print('\n Item telah berhasil dihapus dari database.\n')
+			else:
+				print('')
+		else: #jika id tidak ada pada list gadget
+			print('Tidak ada item dengan ID tersebut')
+	elif (id_item[0] == 'C'): #jika id berawalan huruf C akan diproses sebagai consumable
+		if cek(id_item, data_consumable_global, 0): #mengonfirmasi id consumable ada pada list
+			deskripsi_item = ayo_ambil_sebagian(data_consumable_global,id_item, 0, 1) #mengambil data string berupa deskripsi consumable dari ID tersebut
+			print('Apakah anda yakin ingin menghapus {}'.format(deskripsi_item))
+			selector = input("(Y/N)?") #proses penghapusan item dijalankan jika memilih selector Y
+			if (selector == "Y"):
+				ayo_hapus_sebaris(data_consumable_global, id_item, 0) #menghapus item pada list consumable
+				print('\n Item telah berhasil dihapus dari database.\n')
+			else:
+				print('')
+		else: #jika id tidak ada pada list consumable
+			print('Tidak ada item dengan ID tersebut') #
+	else: #jika id item bukan merupakan gadget atau consumable
+		print('Tidak ada item dengan ID tersebut')
+
+def ubahjumlah(): #fungsi untuk mengubah jumlah item (ADMIN)
+	id_item = input("Masukan ID: ") #input ID item
+	if cek(id_item, data_gadget_global, 0): # jika id berada pada list gadget.csv
+		tambah_jumlah = int(input("Masukan Jumlah: "))  #jumlah item tambahan
+		jumlah_lama = ayo_ambil_sebagian(data_gadget_global, id_item, 0, 3) #jumlah item sebelum penambahan
+		new_jumlah = jumlah_lama + tambah_jumlah #jumlah akhir item
+		deskripsi_item = ayo_ambil_sebagian(data_gadget_global,id_item, 0, 1) #mengambil string deskripsi item sesuai ID
+		if (new_jumlah >= 0): #kondisi valid ketika jumlah akhir item pada data tidak negatif
+			modify_datas(data_gadget_global, id_item, 0, 3, new_jumlah) #modifikasi kolom jumlah item
+			if (tambah_jumlah > 0):
+				print(str(tambah_jumlah) + ' {} berhasil ditambahkan. Stok sekarang : '.format(deskripsi_item) + str(new_jumlah))
+			elif (tambah_jumlah <0):
+				print(str((abs(tambah_jumlah))) + ' {} berhasil dibuang. Stok sekarang : '.format(deskripsi_item) + str(new_jumlah))
+		else:
+			print(str((abs(tambah_jumlah))) + ' {} gagal dibuang karena stok kurang. Stok sekarang : '.format(deskripsi_item) + str(jumlah_lama) + '( < {})'.format(abs(tambah_jumlah)))
+	elif cek(id_item, data_consumable_global, 0): #jika id berada pada list consumable.csv
+		tambah_jumlah = int(input("Masukan Jumlah: ")) #jumlah item tambahan
+		jumlah_lama = ayo_ambil_sebagian(data_consumable_global, id_item, 0, 3) #jumlah item sebelum penambahan
+		new_jumlah = jumlah_lama + tambah_jumlah #jumlah akhir item
+		deskripsi_item = ayo_ambil_sebagian(data_consumable_global,id_item, 0, 1) #mengambil string deskripsi item sesuai ID
+		if (new_jumlah >= 0): #kondisi valid ketika jumlah akhir item pada data tidak negatif
+			modify_datas(data_consumable_global, id_item, 0, 3, new_jumlah) #modifikasi kolom jumlah item
+			if (tambah_jumlah > 0):
+				print(str(tambah_jumlah) + ' {} berhasil ditambahkan. Stok sekarang : '.format(deskripsi_item) + str(new_jumlah))
+			elif (tambah_jumlah <0):
+				print(str((abs(tambah_jumlah))) + ' {} berhasil dibuang. Stok sekarang : '.format(deskripsi_item) + str(new_jumlah))
+		else:
+			print(str((abs(tambah_jumlah))) + ' {} gagal dibuang karena stok kurang. Stok sekarang : '.format(deskripsi_item) + str(jumlah_lama) + '( < {})'.format(abs(tambah_jumlah)))
+	else:
+		print(' \nTidak ada item dengan ID tersebut! \n') #Input ID diproses hanya jika id berawalan huruf G atau C
+
+def pinjam_gadget():
+    input_id_item = input("Masukan ID: ")
+    input_tanggal_pinjam = input("Tanggal peminjaman: ")
+    input_jumlah_pinjam = int(input("Jumlah peminjaman: "))
+
+    if cek(input_id_item,data_gadget_global,0) and validasi_tanggal(input_tanggal_pinjam):
+
+        id_peminjam = active_person[0]
+        nama_gadget = ayo_ambil_sebagian(data_gadget_global, input_id_item, 0, 1)
+        # Mengecek apakah user sudah pernah meminjam item tsb dan belum direturn
+        # Jika user belum mereturn, maka tidak bisa diproses
+        if cek_user_masih_meminjam(id_peminjam,input_id_item):
+            print("Item sedang dipinjam")
+        else:
+            jumlah_gadget = ayo_ambil_sebagian(data_gadget_global, input_id_item, 0, 3)
+            if(jumlah_gadget < input_jumlah_pinjam):
+                print("Item tidak bisa dipinjam")
+            else: # memenuhi
+                jumlah_akhir = jumlah_gadget - input_jumlah_pinjam
+                modify_nilai(input_id_item,0,3,jumlah_akhir,data_gadget_global)
+                if data_gadget_borrow_history_global == []:
+                    data_gadget_borrow_history_global.append([1,id_peminjam,input_id_item,input_tanggal_pinjam,input_jumlah_pinjam,'false'])
+                else:
+                    id = data_gadget_borrow_history_global[-1][0] + 1
+                    data_gadget_borrow_history_global.append([id,id_peminjam,input_id_item,input_tanggal_pinjam,input_jumlah_pinjam,'false'])
+    
+                print("Item "+ str(nama_gadget)+" (x" + str(input_jumlah_pinjam) + ") berhasil dipinjam!")
+            
+    else:
+        if (cek(input_id_item,data_gadget_global,0)==False) and (validasi_tanggal(input_tanggal_pinjam) == True):
+            print("Tidak ada item dengan ID tersebut!")
+        elif (cek(input_id_item,data_gadget_global,0)==True) and (validasi_tanggal(input_tanggal_pinjam) == False):
+            print("Tanggal tidak sesuai")
+        else:
+            print("ID item dan tanggal peminjaman tidak sesuai")
+
+def kembalikan_gadget():
+    id_peminjam = active_person[0]
+
+    data_pinjam = []
+    for baris in data_gadget_borrow_history_global:
+        if (baris[1] == id_peminjam) and (baris[5] == 'false'):
+            data_pinjam.append(baris)
+
+    if data_pinjam != []:
+
+        for i in range (len(data_pinjam)):
+            print(i+1,". ",id_to_name_gadget(data_pinjam[i][2]))
+
+        nomor_pinjam = int(input("Masukkan nomor peminjaman:"))
+        tanggal_pengembalian = input("Tanggal pengembalian:")
+
+        if ( 1<= nomor_pinjam <= len(data_pinjam) and validasi_tanggal(tanggal_pengembalian) ):
+            indeks_data_pinjam = nomor_pinjam - 1 
+            id_gadget_kembali = data_pinjam[indeks_data_pinjam][2] # id gadget yang ingin dikembalikan
+            jumlah_gadget_kembali = data_pinjam[indeks_data_pinjam][4] # jumlah gadget yang ingin dikembalikan
+
+
+            # Mengembalikan gadget yang dipinjam
+            jumlah_gadget_sebelum = ayo_ambil_sebagian(data_gadget_global,id_gadget_kembali,0,3)
+            jumlah_gadget = jumlah_gadget_sebelum + jumlah_gadget_kembali
+            modify_nilai(id_gadget_kembali,0,3,jumlah_gadget,data_gadget_global)
+
+            id_riwayat_peminjaman = data_pinjam[indeks_data_pinjam][0]
+
+            # Untuk gadget borrow history
+            for baris in data_gadget_borrow_history_global:
+                if (baris[0] == id_riwayat_peminjaman):
+                    baris[5] = 'true'
+    
+            # Untuk gadget return history
+            if data_gadget_return_history_global == []:
+                data_gadget_return_history_global.append([1,id_riwayat_peminjaman,tanggal_pengembalian])
+            else:
+                id = data_gadget_return_history_global[-1][0] + 1
+                data_gadget_return_history_global.append([id,id_riwayat_peminjaman,tanggal_pengembalian])
+
+            print("Item " + id_to_name_gadget(id_gadget_kembali) + " (x" + str(jumlah_gadget_kembali) + ") telah dikembalikan")
+        
+        else:
+            if (nomor_pinjam < 1 or nomor_pinjam > len(data_pinjam)) and (validasi_tanggal(tanggal_pengembalian) == True):
+                print("Nomor peminjaman tidak valid")
+            elif (1<= nomor_pinjam <= len(data_pinjam)) and (validasi_tanggal(tanggal_pengembalian) == False):
+                print("Tanggal tidak sesuai")
+            else:
+                print("Nomor peminjaman dan tanggal peminjaman tidak sesuai")
+
+    else: # data_gadget == []
+        print("Tidak ada gadget yang sedang dipinjam")
+
+def minta_consumable():
+    input_id_item = input("Masukan ID Item:")
+    input_jumlah_pinjam = int(input("Jumlah:"))
+    input_tanggal_pinjam = input("Tanggal permintaan:")
+
+    if cek(input_id_item,data_consumable_global,0) and validasi_tanggal(input_tanggal_pinjam):
+
+        jumlah_consumable = ayo_ambil_sebagian(data_consumable_global, input_id_item, 0, 3)
+        nama_consumable = ayo_ambil_sebagian(data_consumable_global, input_id_item, 0, 1)
+        id_peminjam = active_person[0]
+
+        if(jumlah_consumable < input_jumlah_pinjam):
+            print("Item tidak ada")
+        else: # memenuhi
+            jumlah_akhir = jumlah_consumable - input_jumlah_pinjam
+            modify_nilai(input_id_item,0,3,jumlah_akhir,data_consumable_global)
+            if data_consumable_history_global == []:
+                data_consumable_history_global.append([1,id_peminjam,input_id_item,input_tanggal_pinjam,input_jumlah_pinjam])
+            else:
+                id = data_consumable_history_global[-1][0] + 1
+                data_consumable_history_global.append([id,id_peminjam,input_id_item,input_tanggal_pinjam,input_jumlah_pinjam])                    
+            
+            print("Item "+ str(nama_consumable)+" (x" + str(input_jumlah_pinjam) + ") berhasil dipinjam!")
+        
+    else:
+        if (cek(input_id_item,data_consumable_global,0)==False) and (validasi_tanggal(input_tanggal_pinjam) == True):
+            print("Tidak ada item dengan ID tersebut!")
+        elif (cek(input_id_item,data_consumable_global,0)==True) and (validasi_tanggal(input_tanggal_pinjam) == False):
+            print("Tanggal tidak sesuai")
+        else:
+            print("ID item dan tanggal peminjaman tidak sesuai")
+    
+def help():
+    if mode == "admin":
+        print("========================HELP========================")
+        print("register         - untuk melakukan registrasi user baru")
+        print("carirarity       - untuk melakukan pencarian gadget berdasarkan rarity")
+        print("caritahun        - untuk melakukan pencarian gadget berdasarkan tahun")
+        print("tambahitem       - untuk melakukan penambahan item ke dalam inventory")
+        print("hapusitem        - untuk melakukan penghapusan item pada database")
+        print("ubahjumlah       - untuk melakukan perubahan jumlah gadget dan consumable")
+        print("riwayatpinjam    - untuk melihat riwayat peminjaman gadget")
+        print("riwayatkembali   - untuk melihat riwayat pengembalian gadget")
+        print("riwayatambil     - untuk melihat riwayat pengebalian consumable")
+        print("save             - untuk melakukan penyimpanan data ke dalam file")
+        print("help             - untuk memberikan panduan penggunaan sistem")
+        print("exit             - untuk keluar dari aplikasi")
+    elif mode == "pengguna":
+        print("========================HELP========================")
+        print("carirarity       - untuk melakukan pencarian gadget berdasarkan rarity")
+        print("caritahun        - untuk melakukan pencarian gadget berdasarkan tahun")
+        print("pinjam           - untuk melakukan peminjaman gadget")
+        print("kembalikan       - untuk melakukan pengembalian gadget secara seutuhnya")
+        print("minta            - untuk melakukan permintaan consumable yang tersedia")
+        print("save             - untuk melakukan penyimpanan data ke dalam file")
+        print("help             - untuk memberikan panduan penggunaan sistem")
+        print("exit             - untuk keluar dari aplikasi")
+
+
 
 def loading():
     """
@@ -298,7 +655,11 @@ def loading():
     lokasi_program = os.getcwd()
     folder_file = os.path.join(lokasi_program, args.nama_folder)
     
-    os.chdir(folder_file)
+    try:
+        os.chdir(folder_file)
+    except:
+        print("Tidak dapat menemukan Folder!")
+        quit()
     
     global header_data_pengguna_global, data_pengguna_global
     global header_data_consumable_global, data_consumable_global
@@ -379,73 +740,6 @@ def exit():
     if confirm.lower() == 'y':
         save()
 
-def modify_nilai(pencari,kolom_pencari,kolom_dicari,value,array_data):
-    for lines in array_data:
-        if (lines[kolom_pencari] == pencari):
-            lines[kolom_dicari] = value
-    return
-
-def minta():
-    from datetime import datetime
-    
-    minta_iD = input('Masukkan ID item :')
-    while not cek(minta_iD, data_consumable_global, 0) : #validasi apakah id ada
-        print('Input tidak valid atau ID consumable tidak terdaftar')
-        minta_iD = input('Masukkan ID item :')
-
-    jumlah_asli = ayo_ambil_sebagian(data_consumable_global, minta_iD, 0, 3)
-    
-    if jumlah_asli == 0:
-        print('Item sudah habis! Maaf')
-        return #fungsi berhenti
-    else:
-        minta_jumlah = input('Jumlah :') 
-        while True:
-            try:
-                minta_jumlah = int(minta_jumlah)
-                break #validasi masukan jumlah
-            except:
-                print('Masukkan harus berupa integer!')
-                print()
-                minta_jumlah = input('Jumlah :')
-        
-        if jumlah_asli < minta_jumlah:
-            print('Jumlah yang diminta terlalu banyak, hanya ada sisa {} buah di kantung.'.format(jumlah_asli))
-            print()
-            return # jika jumlah kurang maka akan keluar
-        else:
-            minta_tanggal = input('Tanggal permintaan :')
-            format_tanggal = '%d/%m/%Y'
-            while True:
-                try:
-                    datetime.strptime(minta_tanggal, format_tanggal)
-                    break #validasi tanggal
-                except:
-                    print('Format tanggal tidak sesuai. harus dd/mm/yyyy')
-                    print()
-                    minta_tanggal = input('Tanggal permintaan:')
-            
-            # di titik ini semua masukan sudah tervalidasi maka selanjutnya adalah
-            # membuat entri baru pada histori pengambilan
-            # kita punya:
-            # minta_iD
-            # minta_jumlah
-            # minta_tanggal
-            id_peminta = active_person[0] # active person merupakan variabel global dari main yang berisikan 
-                                          # data orang yang sedang login
-            if data_consumable_history_global == []:
-                data_consumable_history_global.append([0,id_peminta,minta_iD,minta_tanggal,minta_jumlah])
-            else:
-                id_baru = data_consumable_history_global[-1][0] + 1
-                data_consumable_history_global.append([id_baru,id_peminta,minta_iD,minta_tanggal,minta_jumlah])
-
-            # saatnya mengubah data consumable
-            jumlah_baru = jumlah_asli - minta_jumlah
-            modify_nilai(minta_iD, 0, 3, jumlah_baru, data_consumable_global)
-            print("Item {} (x{}) telah berhasil diambil!".format(id_to_name_consum(minta_iD), minta_jumlah))
-            print(data_consumable_history_global)
-
-
 
 def lihat_history_return():
     from datetime import datetime
@@ -458,7 +752,7 @@ def lihat_history_return():
         else:
             all_dates.append(entry[2])
     
-    print(all_dates)
+    
     all_dates.sort(key = lambda date: datetime.strptime(date, '%d/%m/%Y'))
     
     
@@ -476,7 +770,7 @@ def lihat_history_return():
             for i in range(banyak_entri-1,-1,-1):
                 useriD, gadgetiD = idPinjam_to_nama_gadget_id(data_gadget_return_history_global_sorted[i][1])
                 print('ID Pengembalian        : {}'.format(data_gadget_return_history_global_sorted[i][0]))
-                print('Nama Pengambil         : {}'.format(id_to_name_user(int(useriD))))
+                print('Nama Pengambil         : {}'.format(id_to_name_user(useriD)))
                 print('Nama Gadget            : {}'.format(id_to_name_gadget(gadgetiD)))
                 print('Tanggal Pengembalian   : {}'.format(data_gadget_return_history_global_sorted[i][2]))
                 print()
@@ -485,16 +779,16 @@ def lihat_history_return():
             for i in range(banyak_entri-1,banyak_entri-6,-1):
                 useriD, gadgetiD = idPinjam_to_nama_gadget_id(data_gadget_return_history_global_sorted[i][1])
                 print('ID Pengembalian        : {}'.format(data_gadget_return_history_global_sorted[i][0]))
-                print('Nama Pengambil         : {}'.format(id_to_name_user(int(useriD))))
+                print('Nama Pengambil         : {}'.format(id_to_name_user(useriD)))
                 print('Nama Gadget            : {}'.format(id_to_name_gadget(gadgetiD)))
                 print('Tanggal Pengembalian   : {}'.format(data_gadget_return_history_global_sorted[i][2]))
                 print()
             banyak_entri -= 5
 
-            masukan = input('Tampilkan yang lain?(Y/N')
+            masukan = input('Tampilkan yang lain?(Y/N)')
             while not masukan in ['Y','y','N','n']:
                 print('Masukkan tidak valid')
-                masukan = input('Tampilkan yang lain?(Y/N')
+                masukan = input('Tampilkan yang lain?(Y/N)')
                     
             if masukan.lower() == 'y':continue
             else: break
@@ -546,10 +840,10 @@ def lihat_history_borrow():
                 print()
             banyak_entri -= 5
 
-            masukan = input('Tampilkan yang lain?(Y/N')
+            masukan = input('Tampilkan yang lain?(Y/N)')
             while not masukan in ['Y','y','N','n']:
                 print('Masukkan tidak valid')
-                masukan = input('Tampilkan yang lain?(Y/N')
+                masukan = input('Tampilkan yang lain?(Y/N)')
                     
             if masukan.lower() == 'y':continue
             else: break
@@ -584,7 +878,7 @@ def lihat_history_consum():
         else:
             all_dates.append(entry[3])
     
-    print(all_dates)
+    
     all_dates.sort(key = lambda date: datetime.strptime(date, '%d/%m/%Y'))
     
     
@@ -619,7 +913,7 @@ def lihat_history_consum():
                 print()
             banyak_entri -= 5
 
-            masukan = input('Tampilkan yang lain?(Y/N')
+            masukan = input('Tampilkan yang lain?(Y/N)')
             while not masukan in ['Y','y','N','n']:
                 print('Masukkan tidak valid')
                 masukan = input('Tampilkan yang lain?(Y/N')
@@ -640,12 +934,7 @@ def main():
     print('Selamat Datang di "Kantong Ajaib!"')
     masukan = ""
 
-    print(data_consumable_global)
-    print(data_consumable_history_global)
-    print(data_gadget_borrow_history_global)
-    print(data_gadget_global)
-    print(data_gadget_return_history_global)
-    print(data_pengguna_global)
+    
 
     while masukan != "exit":
         print(  "Main Menu:\n\
@@ -654,7 +943,7 @@ def main():
         masukan = input('>>')
 
         if masukan == 'login':
-            global active_person
+            global active_person, mode
             active_person, mode = login() # admin atau pengguna active_person, 
             
             if mode == "admin":
@@ -664,7 +953,7 @@ def main():
                     if masukan_admin == 'register':
                         register()
                     elif masukan_admin == 'help':
-                        print("here is some help")
+                        help()
                     elif masukan_admin == 'save':
                         save()
                     elif masukan_admin == 'riwayatpinjam':
@@ -675,6 +964,14 @@ def main():
                         lihat_history_consum()
                     elif masukan_admin == 'tambahitem':
                         tambahitem()
+                    elif masukan_admin == 'carirarity':
+                        searchByRarity()
+                    elif masukan_admin == 'caritahun':
+                        searchByYear()
+                    elif masukan_admin == 'hapusitem':
+                        hapusitem()
+                    elif masukan_admin == 'ubahjumlah':
+                        ubahjumlah()
                     else:
                         print("masukan tidak valid")
                     masukan_admin = input ('>>')
@@ -682,13 +979,22 @@ def main():
             elif mode == "pengguna":
                 masukan_pengguna = input('>>')
                 while masukan_pengguna != "exit":
-                    if masukan_pengguna == 'akusiapa':
-                        print(header_data_pengguna_global)
-                        print(active_person)
-                    elif masukan_pengguna == 'minta':
-                        minta()
+                    if masukan_pengguna == 'minta':
+                        minta_consumable()
                     elif masukan_pengguna == 'save':
                         save()
+                    elif masukan_pengguna == 'carirarity':
+                        searchByRarity()
+                    elif masukan_pengguna == 'caritahun':
+                        searchByYear()
+                    elif masukan_pengguna == 'pinjam':
+                        pinjam_gadget()
+                    elif masukan_pengguna == 'kembalikan':
+                        kembalikan_gadget()
+                    elif masukan_pengguna == 'help':
+                        help()
+                    else:
+                        print("masukan tidak valid")
                     
                     masukan_pengguna = input('>>')
 
@@ -702,7 +1008,7 @@ def main():
         else: print('Fungsi tidak valid!')
             
             
-                       
+
     
                     
         

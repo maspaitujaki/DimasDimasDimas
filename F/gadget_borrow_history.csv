@@ -1,0 +1,4 @@
+id,id_peminjam,id_gadget,tanggal_peminjaman,jumlah,is_returned
+1,123,G1,03/03/2021,20,True
+2,234,G1,05/03/2021,15,True
+3,345,G2,03/03/2020,15,True
